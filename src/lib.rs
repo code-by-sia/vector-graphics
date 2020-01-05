@@ -1,6 +1,7 @@
 extern crate wasm_bindgen;
 
 use wasm_bindgen::prelude::*;
+use wasm_bindgen::__rt::std::panic::resume_unwind;
 
 #[wasm_bindgen]
 pub struct Point {
@@ -12,6 +13,13 @@ pub struct Point {
 pub struct Line {
     start: Point,
     end: Point,
+}
+
+#[wasm_bindgen]
+pub struct Ellipse {
+    position: Point,
+    x_radius: f64,
+    y_radius: f64,
 }
 
 static ZERO_POINT: Point = Point { x: 0f64, y: 0f64 };
@@ -141,6 +149,32 @@ impl Line {
 }
 
 #[wasm_bindgen]
+impl Ellipse {
+    fn new(position: Point, x_radius: f64, y_radius: f64) -> Ellipse {
+        return Ellipse {
+            position,
+            x_radius,
+            y_radius,
+        };
+    }
+
+    fn translate(&self, diff: &Point) -> Ellipse {
+        return Ellipse::new(self.position.translate(diff), self.x_radius, self.y_radius);
+    }
+
+    fn scale(&self, factor: f64) -> Ellipse {
+        return Ellipse::new(self.position.clone(), self.x_radius * factor, self.y_radius * factor);
+    }
+
+    fn is_hit(&self, point: &Point) -> bool {
+        let base = point.translate(&self.position.scale(-1f64));
+        let angle = base.angle();
+        return (angle.cos() * self.x_radius == point.x) &&
+            (angle.sin() * self.y_radius == point.y);
+    }
+}
+
+#[wasm_bindgen]
 pub fn create_point(x: f64, y: f64) -> Point {
     return Point { x, y };
 }
@@ -150,4 +184,9 @@ pub fn create_line(x1: f64, y1: f64, x2: f64, y2: f64) -> Line {
     let start = create_point(x1, y1);
     let end = create_point(x2, y2);
     return Line::new(start, end);
+}
+
+#[wasm_bindgen]
+pub fn create_ellipse(position: Point, x_radius: f64, y_radius: f64) -> Ellipse {
+    return Ellipse::new(position, x_radius, y_radius);
 }

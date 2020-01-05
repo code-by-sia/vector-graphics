@@ -1,7 +1,7 @@
 [package]
 name = "vector-graphics"
 description = "vector graphics library"
-version = "1.1.2"
+version = "1.1.3"
 authors = ["cyaxares <me@siamand.cc>"]
 edition = "2018"
 repository = "https://github.com/SiamandMaroufi/vector-graphics"
